@@ -96,6 +96,7 @@ test('session actions register and unregister', () => {
     createWorkspaceFromTargets: noop,
     updateSplitSizes: noop,
     splitSession: noop,
+    splitAllConnectedSessions: noop,
     reorderWorkspaceSessions: noop,
     moveFocusInWorkspace: noop,
     runSnippet: noop,

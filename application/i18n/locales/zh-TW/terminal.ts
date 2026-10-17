@@ -818,6 +818,8 @@ export const zhTWTerminalMessages: Messages = {
   'tabs.closeToLeft': '關閉左側分頁',
   'tabs.closeToRight': '關閉右側分頁',
   'tabs.closeAll': '關閉所有分頁',
+  'tabs.splitAllConnected': '分割所有已連線工作階段',
+  'tabs.dissolveWorkspaceIntoTabs': '拆開分割為獨立分頁',
   'keychain.edit.labelRequired': 'Label *',
   'keychain.edit.keyLabelPlaceholder': '金鑰 Label',
   'keychain.edit.privateKeyRequired': '私鑰 *',

@@ -146,6 +146,8 @@ interface TopTabsProps {
   onCloseWorkspace: (workspaceId: string) => void;
   onCloseLogView: (logViewId: string) => void;
   onCloseTabsBatch: (targetIds: string[]) => void;
+  onSplitAllConnected: () => void;
+  onDissolveWorkspace: (workspaceId: string) => void;
   onOpenQuickSwitcher: () => void;
   onThemeChange: (theme: 'dark' | 'light' | 'system') => void;
   onOpenSettings: () => void;
@@ -201,6 +203,8 @@ const TopTabsInner: React.FC<TopTabsProps> = ({
   onCloseWorkspace,
   onCloseLogView,
   onCloseTabsBatch,
+  onSplitAllConnected,
+  onDissolveWorkspace,
   onOpenQuickSwitcher,
   onThemeChange,
   onOpenSettings,
@@ -778,6 +782,11 @@ const TopTabsInner: React.FC<TopTabsProps> = ({
 
   // Bulk-close menu items shared by session and workspace context menus.
   // Anchor is the tab the user right-clicked on (matches VSCode/JetBrains UX).
+  const connectedSessionCount = useMemo(
+    () => sessionsProp.filter(s => s.status === 'connected' && !s.hiddenFromTabs).length,
+    [sessionsProp],
+  );
+
   const renderBulkCloseItems = useCallback((anchorId: string) => {
     const anchorIdx = orderedTabs.indexOf(anchorId);
     const othersIds = orderedTabs.filter((id) => id !== anchorId);
@@ -786,6 +795,17 @@ const TopTabsInner: React.FC<TopTabsProps> = ({
     return (
       <>
         <ContextMenuSeparator />
+        <ContextMenuItem
+          disabled={connectedSessionCount < 2}
+          onClick={onSplitAllConnected}
+        >
+          {t('tabs.splitAllConnected')}
+        </ContextMenuItem>
+        {workspaceMap.has(anchorId) && (
+          <ContextMenuItem onClick={() => onDissolveWorkspace(anchorId)}>
+            {t('tabs.dissolveWorkspaceIntoTabs')}
+          </ContextMenuItem>
+        )}
         <ContextMenuItem
           disabled={othersIds.length === 0}
           onClick={() => onCloseTabsBatch(othersIds)}
@@ -812,7 +832,7 @@ const TopTabsInner: React.FC<TopTabsProps> = ({
         </ContextMenuItem>
       </>
     );
-  }, [onCloseTabsBatch, orderedTabs, t]);
+  }, [onCloseTabsBatch, onSplitAllConnected, onDissolveWorkspace, connectedSessionCount, orderedTabs, workspaceMap, t]);
 
   // Render the tabs
   const renderOrderedTabs = () => {

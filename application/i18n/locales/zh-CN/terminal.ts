@@ -818,6 +818,8 @@ export const zhCNTerminalMessages: Messages = {
   'tabs.closeToLeft': '关闭左侧标签',
   'tabs.closeToRight': '关闭右侧标签',
   'tabs.closeAll': '关闭所有标签',
+  'tabs.splitAllConnected': '分屏所有已连接会话',
+  'tabs.dissolveWorkspaceIntoTabs': '拆开分屏为独立标签',
   'keychain.edit.labelRequired': 'Label *',
   'keychain.edit.keyLabelPlaceholder': '密钥 Label',
   'keychain.edit.privateKeyRequired': '私钥 *',

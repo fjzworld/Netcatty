@@ -42,6 +42,7 @@ import {
   detachSessionFromWorkspaceState,
   replaceDissolvedWorkspaceTabOrder,
 } from './sessionWorkspaceDetach';
+import { dissolveWorkspaceIntoTabsState, splitAllConnectedSessionsState } from './sessionWorkspaceSplitAll';
 import {
   createCopiedTerminalSessionClone,
   createSplitTerminalSessionClone,
@@ -626,6 +627,44 @@ export const useSessionState = ({
     e?.stopPropagation();
     closeSessions([sessionId]);
   }, [closeSessions]);
+
+  // One-click "split-screen every connected session": collect all connected,
+  // non-hidden sessions — pulling them out of their current workspaces —
+  // into one fresh grid workspace tab and activate it.
+  const splitAllConnectedSessions = useCallback((): string | null => {
+    const result = splitAllConnectedSessionsState({
+      sessions: sessionsRef.current,
+      workspaces: workspacesRef.current,
+      tabOrder: tabOrderRef.current,
+    });
+    if (!result.changed || !result.workspaceId) return null;
+
+    setSessions(result.sessions);
+    setWorkspaces(result.workspaces);
+    setTabOrder(result.tabOrder);
+    setActiveTabId(result.workspaceId);
+    return result.workspaceId;
+  }, [setActiveTabId]);
+
+  // Inverse of splitAllConnectedSessions for one workspace: dissolve the
+  // split and return every pane session to its own standalone tab.
+  const dissolveWorkspaceIntoTabs = useCallback((workspaceId: string): boolean => {
+    const result = dissolveWorkspaceIntoTabsState({
+      sessions: sessionsRef.current,
+      workspaces: workspacesRef.current,
+      tabOrder: tabOrderRef.current,
+      workspaceId,
+    });
+    if (!result.changed) return false;
+
+    setSessions(result.sessions);
+    setWorkspaces(result.workspaces);
+    setTabOrder(result.tabOrder);
+    if (result.activeTabId) {
+      setActiveTabId(result.activeTabId);
+    }
+    return true;
+  }, [setActiveTabId]);
 
   const startSessionRename = useCallback((sessionId: string) => {
     setSessions(prevSessions => {
@@ -1477,6 +1516,8 @@ export const useSessionState = ({
     appendLocalTerminalToWorkspace,
     updateSplitSizes,
     splitSession,
+    splitAllConnectedSessions,
+    dissolveWorkspaceIntoTabs,
     toggleWorkspaceViewMode,
     setWorkspaceFocusedSession,
     reorderWorkspaceSessions,

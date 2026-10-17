@@ -690,6 +690,8 @@ export const esTerminalMessages: Messages = {
   'tabs.closeToLeft': 'Cerrar pestañas a la izquierda',
   'tabs.closeToRight': 'Cerrar pestañas a la derecha',
   'tabs.closeAll': 'Cerrar todas',
+  'tabs.splitAllConnected': 'Dividir todas las sesiones conectadas',
+  'tabs.dissolveWorkspaceIntoTabs': 'Separar la división en pestañas',
   'keychain.edit.labelRequired': 'Etiqueta *',
   'keychain.edit.keyLabelPlaceholder': 'Etiqueta de la clave',
   'keychain.edit.privateKeyRequired': 'Clave privada *',

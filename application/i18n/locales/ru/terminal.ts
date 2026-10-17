@@ -743,6 +743,8 @@ export const ruTerminalMessages: Messages = {
   'tabs.closeToLeft': 'Закрыть вкладки слева',
   'tabs.closeToRight': 'Закрыть вкладки справа',
   'tabs.closeAll': 'Закрыть все',
+  'tabs.splitAllConnected': 'Разделить все подключённые сеансы',
+  'tabs.dissolveWorkspaceIntoTabs': 'Разбить разделение на вкладки',
   'keychain.edit.labelRequired': 'Метка *',
   'keychain.edit.keyLabelPlaceholder': 'Метка ключа',
   'keychain.edit.privateKeyRequired': 'Приватный ключ *',

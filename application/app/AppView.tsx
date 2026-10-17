@@ -279,7 +279,7 @@ function AppViewInner({ domains }: AppViewProps) {
     sessions, setActiveTabId, setDeepLinkHostDraft, setDraggingSessionId, setEditorWordWrap,
     setNavigateToSection, setTerminalFontFamilyId, setTerminalFontSize, setVaultFocusRequest, updateSessionFontSize, updateSessionRestoreCwd, updateSessionDynamicTitle, updateSessionCodingCliProvider, clearSessionFontSizeOverride,
     setWorkspaceFocusedSession, sftpAutoOpenSidebar, sftpFollowTerminalCwd, setSftpFollowTerminalCwd, sftpAutoSync, sftpDefaultViewMode, sftpDoubleClickBehavior,
-    sftpShowHiddenFiles, sftpUseCompressedUpload, snippetPackages, snippets, splitSessionWithCurrentShell, startSessionRename,
+    sftpShowHiddenFiles, sftpUseCompressedUpload, snippetPackages, snippets, dissolveWorkspaceIntoTabs, splitAllConnectedSessions, splitSessionWithCurrentShell, startSessionRename,
     startWorkspaceRename, submitSessionRename, submitWorkspaceRename, t, terminalFontFamilyId, terminalFontSize, terminalSettings, terminalThemeId, themeById,
     toggleBroadcast, toggleScriptsSidePanelRef, toggleSidePanelRef, terminalPaneMagnificationRef, sftpPaneMagnificationRef, toggleWorkspaceViewMode, unmanageSource,
     readPersistedHosts, readPersistedManagedSources, updateCustomGroups, updateGroupConfigs, updateHostDistro, updateHosts, updateIdentities, updateKeys, updateKnownHosts, updateManagedSources,
@@ -555,6 +555,8 @@ function AppViewInner({ domains }: AppViewProps) {
         onCloseWorkspace={closeWorkspace}
         onCloseLogView={closeLogView}
         onCloseTabsBatch={closeTabsBatch}
+        onSplitAllConnected={splitAllConnectedSessions}
+        onDissolveWorkspace={dissolveWorkspaceIntoTabs}
         onOpenQuickSwitcher={handleOpenQuickSwitcher}
         onThemeChange={setTheme}
         onOpenSettings={handleOpenSettings}

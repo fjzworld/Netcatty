@@ -235,6 +235,8 @@ export function TerminalHost() {
       sftpDoubleClickBehavior: terminalSettings.sftpDoubleClickBehavior,
       sftpShowHiddenFiles: terminalSettings.sftpShowHiddenFiles,
       sftpUseCompressedUpload: terminalSettings.sftpUseCompressedUpload,
+      splitAllConnectedSessions: sessionActions?.splitAllConnectedSessions,
+      dissolveWorkspaceIntoTabs: sessionActions?.dissolveWorkspaceIntoTabs,
       splitSessionWithCurrentShell: handlers.splitSessionWithCurrentShell,
       sshDebugLogsEnabled: terminalSettings.sshDebugLogsEnabled,
       terminalFontFamilyId: terminalSettings.terminalFontFamilyId,
