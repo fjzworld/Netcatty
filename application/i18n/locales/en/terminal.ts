@@ -728,6 +728,8 @@ export const enTerminalMessages: Messages = {
   'tabs.closeToLeft': 'Close Tabs to the Left',
   'tabs.closeToRight': 'Close Tabs to the Right',
   'tabs.closeAll': 'Close All',
+  'tabs.splitAllConnected': 'Split All Connected Sessions',
+  'tabs.dissolveWorkspaceIntoTabs': 'Break Split into Tabs',
   'keychain.edit.labelRequired': 'Label *',
   'keychain.edit.keyLabelPlaceholder': 'Key label',
   'keychain.edit.privateKeyRequired': 'Private key *',

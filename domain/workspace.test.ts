@@ -5,6 +5,8 @@ import type { WorkspaceNode } from "./models.ts";
 import {
   appendPaneToWorkspaceRoot,
   cloneWorkspaceTree,
+  collectSessionIds,
+  createGridWorkspaceFromSessionIds,
   insertPaneIntoWorkspace,
   reorderWorkspaceFocusSessionOrder,
   resolveWorkspaceFocusSessionOrder,
@@ -133,4 +135,80 @@ test("cloneWorkspaceTree keeps original sessionId when the map lacks it", () => 
     new Map(),
   );
   assert.equal(clone.type === "pane" && clone.sessionId, "s1");
+});
+
+const gridIds = (n: number) => Array.from({ length: n }, (_, i) => `s${i + 1}`);
+
+const gridRowsOf = (node: WorkspaceNode): string[][] => {
+  // A grid root is a horizontal split whose children are vertical rows; a
+  // single-row grid degrades to the bare vertical split.
+  if (node.type === 'split' && node.direction === 'horizontal') {
+    return node.children.map(child => collectSessionIds(child));
+  }
+  return [collectSessionIds(node)];
+};
+
+const flatColumnCount = (node: WorkspaceNode): number => {
+  if (node.type !== "split" || node.direction !== "vertical") return 0;
+  return node.children.filter(child => child.type === "pane").length;
+};
+
+test("createGridWorkspaceFromSessionIds rejects an empty list", () => {
+  assert.throws(() => createGridWorkspaceFromSessionIds([], { title: "T" }));
+});
+
+test("createGridWorkspaceFromSessionIds builds a single pane for one session", () => {
+  const ws = createGridWorkspaceFromSessionIds(["only"], { title: "T" });
+  assert.equal(ws.root.type, "pane");
+  assert.equal(ws.root.type === "pane" && ws.root.sessionId, "only");
+  assert.equal(ws.focusedSessionId, "only");
+  assert.deepEqual(ws.focusSessionOrder, ["only"]);
+});
+
+for (const n of [2, 3]) {
+  test(`createGridWorkspaceFromSessionIds keeps a single row for ${n} sessions`, () => {
+    const ws = createGridWorkspaceFromSessionIds(gridIds(n), { title: "T" });
+    assert.equal(ws.root.type, "split");
+    if (ws.root.type !== "split") return;
+    assert.equal(ws.root.direction, "vertical");
+    assert.equal(flatColumnCount(ws.root), n);
+    assert.deepEqual(collectSessionIds(ws.root), gridIds(n));
+  });
+}
+
+for (const n of [4, 5, 6, 7, 9]) {
+  test(`createGridWorkspaceFromSessionIds grids ${n} sessions into ceil(sqrt(n)) columns`, () => {
+    const ws = createGridWorkspaceFromSessionIds(gridIds(n), { title: "T" });
+    assert.equal(ws.root.type, "split");
+    if (ws.root.type !== "split") return;
+    assert.equal(ws.root.direction, "horizontal");
+
+    const columns = Math.ceil(Math.sqrt(n));
+    const rows = gridRowsOf(ws.root);
+    assert.equal(rows.length, Math.ceil(n / columns));
+    rows.forEach((row, idx) => {
+      const expected = idx === rows.length - 1 ? n - (rows.length - 1) * columns : columns;
+      assert.equal(row.length, expected);
+    });
+
+    assert.deepEqual(collectSessionIds(ws.root), gridIds(n));
+    assert.equal(ws.focusedSessionId, "s1");
+    assert.deepEqual(ws.focusSessionOrder, gridIds(n));
+  });
+}
+
+test("createGridWorkspaceFromSessionIds gives every sibling equal weight and passes options", () => {
+  const ws = createGridWorkspaceFromSessionIds(gridIds(4), {
+    title: "All",
+    autoTitle: false,
+    viewMode: "split",
+  });
+  assert.equal(ws.title, "All");
+  assert.equal(ws.autoTitle, false);
+  assert.equal(ws.viewMode, "split");
+  if (ws.root.type !== "split") return;
+  assert.deepEqual(ws.root.sizes, [1, 1]);
+  ws.root.children.forEach(child => {
+    if (child.type === "split") assert.deepEqual(child.sizes, [1, 1]);
+  });
 });

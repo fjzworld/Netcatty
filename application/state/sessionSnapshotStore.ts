@@ -62,6 +62,8 @@ export type SessionSnapshotActions = Pick<
   | 'createWorkspaceFromTargets'
   | 'updateSplitSizes'
   | 'splitSession'
+  | 'splitAllConnectedSessions'
+  | 'dissolveWorkspaceIntoTabs'
   | 'reorderWorkspaceSessions'
   | 'moveFocusInWorkspace'
   | 'runSnippet'

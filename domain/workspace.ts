@@ -280,6 +280,78 @@ export const createWorkspaceFromSessionIds = (
 };
 
 /**
+ * Create a workspace from multiple session IDs laid out as an auto-balanced
+ * grid instead of one long row: up to 3 sessions share a single row; with 4+
+ * the layout becomes columns = ceil(sqrt(n)) rows stacked under a root
+ * horizontal split, each row a vertical split, so panes keep a usable aspect
+ * ratio instead of narrowing into slivers. The trailing partial row keeps
+ * equal pane widths within itself, so its panes are wider than the full rows
+ * above (tmux-tiled behaviour).
+ */
+export const createGridWorkspaceFromSessionIds = (
+  sessionIds: string[],
+  options: {
+    title: string;
+    viewMode?: WorkspaceViewMode;
+    snippetId?: string;
+    /** false = the title is an explicit name; omit for an auto default title. */
+    autoTitle?: boolean;
+  }
+): Workspace => {
+  if (sessionIds.length === 0) {
+    throw new Error('Cannot create workspace with no sessions');
+  }
+
+  const paneOf = (sessionId: string): WorkspaceNode => ({
+    id: crypto.randomUUID(),
+    type: 'pane',
+    sessionId,
+  });
+
+  let root: WorkspaceNode;
+  if (sessionIds.length === 1) {
+    root = paneOf(sessionIds[0]);
+  } else {
+    const columns = sessionIds.length <= 3
+      ? sessionIds.length
+      : Math.ceil(Math.sqrt(sessionIds.length));
+    const rows: string[][] = [];
+    for (let i = 0; i < sessionIds.length; i += columns) {
+      rows.push(sessionIds.slice(i, i + columns));
+    }
+
+    const rowNodes: WorkspaceNode[] = rows.map(row => ({
+      id: crypto.randomUUID(),
+      type: 'split' as const,
+      direction: 'vertical' as const,
+      children: row.map(paneOf),
+      sizes: row.map(() => 1),
+    }));
+
+    root = rowNodes.length === 1
+      ? rowNodes[0]
+      : {
+          id: crypto.randomUUID(),
+          type: 'split',
+          direction: 'horizontal', // rows stacked top-to-bottom
+          children: rowNodes,
+          sizes: rowNodes.map(() => 1),
+        };
+  }
+
+  return {
+    id: `ws-${crypto.randomUUID()}`,
+    title: options.title,
+    autoTitle: options.autoTitle,
+    viewMode: options.viewMode,
+    snippetId: options.snippetId,
+    focusedSessionId: sessionIds[0],
+    focusSessionOrder: [...sessionIds],
+    root,
+  };
+};
+
+/**
  * Deep-clone a workspace layout tree, minting fresh node ids and remapping
  * every pane's sessionId via `sessionIdMap` (old id -> new id). Split
  * `direction` and `sizes` are preserved. A sessionId absent from the map is
