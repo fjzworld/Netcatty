@@ -223,11 +223,12 @@ module.exports = {
         target: [
             {
                 target: 'dmg',
-                arch: ['arm64', 'x64']
+                // fjzworld fork: local Apple Silicon only — skip Intel builds.
+                arch: ['arm64']
             },
             {
                 target: 'zip',
-                arch: ['arm64', 'x64']
+                arch: ['arm64']
             }
         ],
         category: 'public.app-category.developer-tools',
